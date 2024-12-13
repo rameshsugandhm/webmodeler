@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1b3r8i2" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.24.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.4.0">
+  <bpmn:process id="adtValidationFlow" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_1hu18p0</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:callActivity id="Activity_0psacpo" name="graphqlQuery">
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="QirinCU-GraphQL-Test" propagateAllChildVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=companyId" target="InputVariable_09c5p4n" />
+          <zeebe:output source="={    &#10;  autoDecisionThresholdCode:autoDecisionThresholdCode,&#10;  autoDecisionThresholdAmount:autoDecisionThresholdAmount,&#10;  autoDecisionThresholdCurrencyCode:autoDecisionThresholdCurrencyCode,&#10;  autoDecisionThresoldMotiveCode:autoDecisionThresoldMotiveCode,&#10;  validGradeValue:validGradeValue,&#10;  validGradeMethodCode:validGradeMethodCode,&#10;  validGradeDecisionDateTime:validGradeDecisionDateTime,&#10;  businessUnit:businessUnit,&#10;  country:countryCode&#10;}" target="graphql_query_output" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1hu18p0</bpmn:incoming>
+      <bpmn:outgoing>Flow_00iyqcy</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:sequenceFlow id="Flow_1hu18p0" sourceRef="StartEvent_1" targetRef="Activity_0psacpo" />
+    <bpmn:sequenceFlow id="Flow_00iyqcy" sourceRef="Activity_0psacpo" targetRef="Activity_0t7vwv1" />
+    <bpmn:callActivity id="Activity_0t7vwv1" name="ADTRegenProcess">
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="ADTRegenProcess" propagateAllChildVariables="false" propagateAllParentVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:input source="={&#10;	&#34;currentAdtOrigin&#34;: currentAdtOrigin,&#10;	&#34;proposalAdtOrigin&#34;: proposalAdtOrigin,&#10;	&#34;currentGrade&#34;: currentGrade,&#10;    &#34;newGrade&#34; : graphql_query_output.validGradeValue,&#10;	&#34;currentAdtAmount&#34;: graphql_query_output.autoDecisionThresholdAmount,&#10;	&#34;currentAdtValue&#34;: (if (graphql_query_output.autoDecisionThresholdCode = &#34;AMOUNT&#34; ) &#10;then (&#34;Amount&#34;)&#10;    else (graphql_query_output.autoDecisionThresholdCode)),&#10;	&#34;proposalAdtValue&#34;:  (if (graphql_query_output.autoDecisionThresholdCode = &#34;AMOUNT&#34; ) &#10;then (&#34;Amount&#34;)&#10;    else (graphql_query_output.autoDecisionThresholdCode)),&#10;	&#34;proposalAdtAmount&#34;: graphql_query_output.autoDecisionThresholdAmount,&#10;	&#34;exposureAmount&#34;: exposureAmount,&#10;	&#34;businessUnit&#34;: graphql_query_output.businessUnit,&#10;	&#34;country&#34;: graphql_query_output.country&#10;	}" target="adtRegenRequest" />
+          <zeebe:output source="=ADTRegenResultAction" target="ADTRegenResultAction" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_00iyqcy</bpmn:incoming>
+      <bpmn:outgoing>Flow_0abigrt</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:endEvent id="Event_192esja">
+      <bpmn:incoming>Flow_0abigrt</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0abigrt" sourceRef="Activity_0t7vwv1" targetRef="Event_192esja" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="adtValidationFlow">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="152" y="109" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_14toaws_di" bpmnElement="Activity_0psacpo">
+        <dc:Bounds x="290" y="84" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0u1r4yn_di" bpmnElement="Activity_0t7vwv1">
+        <dc:Bounds x="580" y="84" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_192esja_di" bpmnElement="Event_192esja">
+        <dc:Bounds x="782" y="106" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1hu18p0_di" bpmnElement="Flow_1hu18p0">
+        <di:waypoint x="188" y="127" />
+        <di:waypoint x="290" y="127" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_00iyqcy_di" bpmnElement="Flow_00iyqcy">
+        <di:waypoint x="390" y="124" />
+        <di:waypoint x="580" y="124" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0abigrt_di" bpmnElement="Flow_0abigrt">
+        <di:waypoint x="680" y="124" />
+        <di:waypoint x="782" y="124" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
